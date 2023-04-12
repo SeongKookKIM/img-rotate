@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="js/jquery-3.6.3.min.js.js"></script>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    section {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .circle {
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      position: relative;
+    }
+    .item {
+      position: absolute;
+      width: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .item img {
+      width: 100%;
+    }
+    .circle h2 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5em;
+      width: 350px;
+      height: 100px;
+    }
+    .circle h2 img {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <body>
+    <section>
+      <div class="circle">
+        <h2><img src="img/partners.png" alt="2" /></h2>
+        <div class="item"><img src="img/image0.svg" alt="1" /></div>
+        <div class="item"><img src="img/image1.svg" alt="1" /></div>
+        <div class="item"><img src="img/image2.svg" alt="1" /></div>
+        <div class="item"><img src="img/image3.svg" alt="1" /></div>
+        <div class="item"><img src="img/image4.svg" alt="1" /></div>
+        <div class="item"><img src="img/image5.svg" alt="1" /></div>
+        <div class="item"><img src="img/image6.svg" alt="1" /></div>
+        <div class="item"><img src="img/stream coin.png" alt="1" /></div>
+      </div>
+    </section>
+  </body>
+  <script>
+    var stops = 8, // number of stops around the circle
+      delay = 2000, // time to pause in milliseconds
+      animationDelay = 10, // animation time between steps
+      step = 0.02, // in radians
+      img = $(".item"), // target images
+      r = 400, // radius
+      xcenter = 200, // x offset
+      ycenter = 300, // y offset
+      // *** don't change variables below ***
+      last,
+      d = 0,
+      t = 0,
+      i = 1,
+      angledStops = 360 / stops,
+      RadToDeg = 180 / Math.PI,
+      stop = angledStops;
+
+    // this evenly spaces out all images with the class rotate around the circle
+    function setup() {
+      // 270 degrees is actually the top of the circle
+      var start = (270 * Math.PI) / 180,
+        spacing = (2 * Math.PI) / img.length;
+      img.each(function () {
+        $(this)
+          .data("pos", start) // save the position of each image
+          .css({
+            top: Math.floor(ycenter + r * Math.sin(start)),
+            left: Math.floor(xcenter + r * Math.cos(start)),
+          });
+        start += spacing;
+      });
+    }
+
+    function moveit() {
+      t += step;
+      last = d;
+      d = Math.round(t * RadToDeg) % 360;
+      $.when(
+        img.each(function () {
+          var $t = $(this),
+            pos = $t.data("pos") + step;
+          $t.data("pos", pos).animate(
+            {
+              top: Math.floor(ycenter + r * Math.sin(pos)),
+              left: Math.floor(xcenter + r * Math.cos(pos)),
+            },
+            animationDelay
+          );
+        })
+      ).then(function () {
+        if (d > stop || d < last) {
+          i++;
+          if (i > stops || d < angledStops) {
+            stop = angledStops;
+            i = 1;
+          } else {
+            stop = angledStops * i;
+          }
+          setTimeout(moveit, delay);
+        } else {
+          moveit();
+        }
+      });
+    }
+
+    $(document).ready(function () {
+      setup();
+      moveit();
+    });
+  </script>
+</html>
